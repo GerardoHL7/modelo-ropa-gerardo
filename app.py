@@ -32,7 +32,7 @@ if uploaded_file is not None:
         # Preprocesar imagen
         img = img.resize(TARGET_SIZE)
         img_array = image.img_to_array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
+        img_array = img_array.reshape(1, -1)  # Aplanar la imagen: (1, 16384)
 
         # Predicción
         predictions = model.predict(img_array)[0]
