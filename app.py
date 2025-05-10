@@ -26,20 +26,21 @@ uploaded_file = st.file_uploader("📷 Sube una imagen", type=["jpg", "jpeg", "p
 
 if uploaded_file is not None:
     try:
-        img = Image.open(uploaded_file).convert("RGB")
-        st.image(img, caption="Imagen subida", use_column_width=True)
+        # Cargar imagen en escala de grises
+        img = Image.open(uploaded_file).convert("L")  # "L" = modo grayscale
+        st.image(img, caption="Imagen subida (escala de grises)", use_column_width=True)
 
-        # Preprocesar imagen
+        # Preprocesar
         img = img.resize(TARGET_SIZE)
-        img_array = image.img_to_array(img) / 255.0
-        img_array = img_array.reshape(1, -1)  # Aplanar la imagen: (1, 16384)
+        img_array = image.img_to_array(img) / 255.0  # shape: (128, 128, 1)
+        img_array = img_array.reshape(1, -1)  # shape: (1, 16384)
 
         # Predicción
         predictions = model.predict(img_array)[0]
         pred_dict = {class_names[i]: float(predictions[i]) for i in range(len(class_names))}
         pred_label = class_names[np.argmax(predictions)]
 
-        # Mostrar resultado
+        # Mostrar resultados
         st.subheader("🔍 Resultado:")
         st.write(f"**Predicción principal:** {pred_label}")
         st.bar_chart(pred_dict)
